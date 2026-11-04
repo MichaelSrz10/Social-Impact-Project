@@ -68,20 +68,17 @@
 </span>
 </label>
 </div>
-<div class="{{ old('user-type') === 'medico' ? '' : 'hidden' }} mt-3 max-w-md" id="promotor-code-wrap">
-<label class="font-label-sm text-label-sm text-on-surface-variant block mb-1" for="reg-codigo-promotor">Código institucional de personal de salud</label>
-<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none border @error('codigo_promotor') border-error @else border-transparent @enderror focus:border-primary/30" id="reg-codigo-promotor" name="codigo_promotor" type="text" autocomplete="off" placeholder="Código entregado por tu E.S.E." value="{{ old('codigo_promotor') }}"/>
-<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Solicítalo a la coordinación de tu E.S.E. para crear una cuenta de promotor.</p>
+<div class="{{ old('user-type') === 'medico' ? '' : 'hidden' }} mt-2 max-w-md p-2.5 rounded-lg bg-surface-container-high text-primary text-xs font-label-sm flex items-center gap-2" id="promotor-badge-info">
+  <span class="material-symbols-outlined text-[18px]">verified</span>
+  <span>Registro habilitado como <strong>Promotor de Salud</strong>: acceso a despacho de brigadas y optimización de rutas.</span>
 </div>
 </div>
 <script>
   document.querySelectorAll('input[name="user-type"]').forEach(function (radio) {
     radio.addEventListener('change', function () {
       var esMedico = document.querySelector('input[name="user-type"]:checked').value === 'medico';
-      var wrap = document.getElementById('promotor-code-wrap');
-      var input = document.getElementById('reg-codigo-promotor');
-      wrap.classList.toggle('hidden', !esMedico);
-      input.required = esMedico;
+      var badge = document.getElementById('promotor-badge-info');
+      if (badge) badge.classList.toggle('hidden', !esMedico);
     });
   });
 </script>

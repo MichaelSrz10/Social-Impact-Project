@@ -153,12 +153,14 @@
             <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Atención y Registro Comunitario</span>
           </div>
         </a>
-        <nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-primary font-bold rounded-lg">
-          <a aria-current="page" class="px-space-sm py-space-xs transition-colors bg-surface-container-high text-primary font-bold rounded-lg" data-path="panel-territorial" href="#">Panel Territorial</a>
-          <a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md rounded-lg" data-path="registro-veredal" href="#">Registro Veredal</a>
-          <a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md rounded-lg" data-path="jornadas-de-salud" href="#">Jornadas de Salud</a>
-          <a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md rounded-lg" data-path="censo-familias" href="#">Censo de Familias</a>
-          <a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md rounded-lg" data-path="reportes-epidemiologicos" href="#">Reportes Epidemiológicos</a>
+        <nav class="hidden lg:flex items-center gap-space-xs">
+          <a class="px-space-sm py-space-xs transition-colors bg-surface-container-high text-primary font-bold rounded-lg" href="#panel-territorial">Panel Territorial</a>
+          <a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md rounded-lg" href="#ruta-sugerida">Ruta de Hoy</a>
+          <a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md rounded-lg" href="#solicitudes">Solicitudes Recibidas</a>
+          @if (Auth::user()->isCiudadano())
+            <a class="px-space-sm py-space-xs text-secondary hover:text-primary transition-colors font-label-md text-label-md rounded-lg" href="{{ route('dashboard.user') }}">Vista Ciudadano</a>
+          @endif
+          <a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md rounded-lg" href="{{ route('home') }}">Portal Principal</a>
         </nav>
       </div>
       <div class="flex items-center gap-space-sm">
@@ -210,7 +212,7 @@
   </div>
 @endif
 
-<section class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm">
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm" id="panel-territorial">
   <div>
     <span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Despacho operativo</span>
     <h1 class="font-headline-lg text-headline-lg text-primary">Panel Territorial</h1>

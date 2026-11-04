@@ -108,7 +108,7 @@ class SolicitudFlowTest extends TestCase
         $this->assertDatabaseHas('solicitudes', ['id' => $solicitud->id, 'estado' => 'cancelada']);
     }
 
-    public function test_registro_de_promotor_requiere_codigo_institucional(): void
+    public function test_registro_de_promotor_asigna_rol_promotor(): void
     {
         $datos = [
             'name' => 'Dr. Nuevo Promotor',
@@ -119,11 +119,7 @@ class SolicitudFlowTest extends TestCase
             'user-type' => 'medico',
         ];
 
-        $this->from('/register')->post('/register', $datos + ['codigo_promotor' => 'incorrecto'])
-            ->assertSessionHasErrors('codigo_promotor');
-        $this->assertGuest();
-
-        $this->post('/register', $datos + ['codigo_promotor' => config('rutasalud.promotor_code')])
+        $this->post('/register', $datos)
             ->assertRedirect(route('dashboard', absolute: false));
 
         $this->assertDatabaseHas('users', ['email' => 'nuevo.promotor@saludrural.gov.co', 'role' => 'promotor']);

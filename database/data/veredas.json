@@ -1,0 +1,87 @@
+[
+  {
+    "id": 1,
+    "nombre": "Ojo de Agua",
+    "lat": 5.319,
+    "lng": -73.824,
+    "vulnerabilidad": 8
+  },
+  {
+    "id": 2,
+    "nombre": "Soagá",
+    "lat": 5.295,
+    "lng": -73.805,
+    "vulnerabilidad": 6
+  },
+  {
+    "id": 3,
+    "nombre": "Palogordo",
+    "lat": 5.248,
+    "lng": -73.852,
+    "vulnerabilidad": 9
+  },
+  {
+    "id": 4,
+    "nombre": "Peñas de Boquerón",
+    "lat": 5.231,
+    "lng": -73.864,
+    "vulnerabilidad": 7
+  },
+  {
+    "id": 5,
+    "nombre": "Ramal",
+    "lat": 5.312,
+    "lng": -73.715,
+    "vulnerabilidad": 10
+  },
+  {
+    "id": 6,
+    "nombre": "Paunita",
+    "lat": 5.289,
+    "lng": -73.732,
+    "vulnerabilidad": 8
+  },
+  {
+    "id": 7,
+    "nombre": "Juaitoque",
+    "lat": 5.265,
+    "lng": -73.789,
+    "vulnerabilidad": 9
+  },
+  {
+    "id": 8,
+    "nombre": "La Capilla",
+    "lat": 5.251,
+    "lng": -73.768,
+    "vulnerabilidad": 5
+  },
+  {
+    "id": 9,
+    "nombre": "Miña y Rinconada",
+    "lat": 5.422,
+    "lng": -73.682,
+    "vulnerabilidad": 7
+  },
+  {
+    "id": 10,
+    "nombre": "Tagua",
+    "lat": 5.405,
+    "lng": -73.699,
+    "vulnerabilidad": 4
+  },
+  {
+    "id": 11,
+    "nombre": "Hato Grande",
+    "lat": 5.348,
+    "lng": -73.912,
+    "vulnerabilidad": 8
+  },
+  {
+    "id": 12,
+    "nombre": "Nemogá",
+    "lat": 5.419,
+    "lng": -73.784,
+    "vulnerabilidad": 6
+  }
+]
+

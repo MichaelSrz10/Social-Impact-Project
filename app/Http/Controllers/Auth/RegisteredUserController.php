@@ -47,9 +47,15 @@ class RegisteredUserController extends Controller
             'terms.accepted' => 'Debes aceptar los términos de uso y la política de privacidad.',
         ]);
 
-        $role = ($request->input('user-type') === 'medico' || $request->input('role') === 'promotor')
-            ? 'promotor'
-            : 'user';
+        $esPromotor = $request->input('user-type') === 'medico';
+
+        if ($esPromotor && ! hash_equals((string) config('rutasalud.promotor_code'), (string) $request->input('codigo_promotor'))) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'codigo_promotor' => 'El código institucional no es válido.',
+            ]);
+        }
+
+        $role = $esPromotor ? 'promotor' : 'user';
 
         try {
             $user = User::create([

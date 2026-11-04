@@ -188,490 +188,146 @@
   <!-- Main Content -->
   <main class="w-full pt-20 bg-background flex-1 max-w-[1200px] mx-auto px-margin">
     <div class="flex flex-col w-full gap-space-lg pb-space-xl">
-      
-      <!-- Offline/Terrain Synchronization Status Notice -->
-      <div class="w-full bg-secondary-container rounded-xl p-space-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm shadow-sm">
-        <div class="flex items-center gap-space-xs text-on-secondary-fixed">
-          <span class="material-symbols-outlined text-primary text-[22px]" style="font-variation-settings: 'FILL' 1;">cloud_sync</span>
-          <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-space-sm">
-            <span class="font-body-bold text-body-bold">Sincronizado (Modo offline listo para terreno)</span>
-            <span class="font-label-sm text-label-sm text-on-secondary-container">Última descarga satelital: hoy 05:40 AM · Memoria local: 98% libre</span>
-          </div>
-        </div>
-        <div class="flex items-center gap-space-xs">
-          <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
-          <span class="font-label-sm text-label-sm text-on-secondary-fixed font-semibold">Listo para desconexión en trocha</span>
-        </div>
-      </div>
+@php
+  $estadoClase = [
+    'pendiente' => 'bg-tertiary-fixed text-on-tertiary-fixed',
+    'programada' => 'bg-primary-fixed text-on-primary-fixed',
+    'atendida' => 'bg-secondary-container text-on-secondary-container',
+    'cancelada' => 'bg-error-container text-on-error-container',
+  ];
+  $prioClase = fn ($p) => $p >= 11 ? 'bg-error text-on-error' : ($p >= 9 ? 'bg-tertiary-container text-on-tertiary-container' : ($p >= 7 ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-surface-variant text-on-surface-variant'));
+  $filtros = ['activas' => 'Activas', 'pendiente' => 'Pendientes', 'programada' => 'Programadas', 'atendida' => 'Atendidas', 'cancelada' => 'Canceladas', 'todas' => 'Todas'];
+@endphp
 
-      <!-- Operational Header & Dispatch Meta -->
-      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
-        <div class="flex flex-col gap-1 max-w-2xl">
-          <div class="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
-            <span class="material-symbols-outlined text-[16px] text-primary">local_hospital</span>
-            <span>ESE Hospital San Antonio · Choachí, Cundinamarca</span>
-            <span>·</span>
-            <span class="font-semibold text-primary">Subred Oriente Rural</span>
-          </div>
-          <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">
-            Tablero Operativo de Brigadas y Despacho
-          </h1>
-          <p class="font-body-md text-body-md text-on-surface-variant">
-            Planificación, georreferenciación de visitas domiciliarias y supervisión de cadena de frío para personal extramural en veredas de alta pendiente.
-          </p>
-        </div>
-        <!-- Top Action CTAs -->
-        <div class="flex flex-wrap items-center gap-space-xs sm:gap-space-sm">
-          <button class="h-12 px-space-md rounded-lg bg-surface-container text-primary font-label-lg text-label-lg hover:bg-surface-container-high transition-colors flex items-center gap-2" type="button">
-            <span class="material-symbols-outlined text-[20px]">download</span>
-            Exportar Fichas para Terreno
-          </button>
-          <button class="h-12 px-space-md rounded-lg bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2" type="button">
-            <span class="material-symbols-outlined text-[20px]">add_road</span>
-            + Asignar Nueva Ruta
-          </button>
-        </div>
-      </div>
+@if (session('status'))
+  <div class="p-3 rounded-lg bg-primary-fixed text-on-primary-fixed font-label-md text-label-md flex items-center gap-2" role="status">
+    <span class="material-symbols-outlined text-[20px]">check_circle</span> {{ session('status') }}
+  </div>
+@endif
+@if ($errors->any())
+  <div class="p-3 rounded-lg bg-error-container text-on-error-container font-label-md text-label-md" role="alert">
+    <ul class="list-disc list-inside">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+  </div>
+@endif
 
-      <!-- Quick Filter Strip -->
-      <div class="bg-surface-container-low p-space-sm rounded-xl flex flex-wrap items-center justify-between gap-space-sm">
-        <div class="flex flex-wrap items-center gap-space-sm">
-          <div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
-            <span class="material-symbols-outlined text-[18px]">filter_alt</span>
-            <span>Vereda:</span>
-          </div>
-          <div class="flex flex-wrap gap-1.5">
-            <button class="px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-primary text-on-primary font-bold" type="button">Todas (4)</button>
-            <button class="px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface hover:bg-surface-container-high" type="button">El Salitre</button>
-            <button class="px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface hover:bg-surface-container-high" type="button">Aguadas</button>
-            <button class="px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface hover:bg-surface-container-high" type="button">San Lorenzo</button>
-            <button class="px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface hover:bg-surface-container-high" type="button">Fómeque Trocha</button>
-          </div>
-        </div>
-        <div class="flex items-center gap-space-xs">
-          <span class="text-on-surface-variant font-label-sm text-label-sm">Estado:</span>
-          <div class="flex gap-1">
-            <span class="px-2.5 py-1 rounded-md bg-surface-container-lowest text-on-surface text-label-sm font-label-sm font-semibold">Pendientes (8)</span>
-            <span class="px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-container text-label-sm font-label-sm">En ruta (3)</span>
-            <span class="px-2.5 py-1 rounded-md bg-surface-container-lowest text-on-surface text-label-sm font-label-sm">Atendidos (3)</span>
-          </div>
-        </div>
-      </div>
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm">
+  <div>
+    <span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Despacho operativo</span>
+    <h1 class="font-headline-lg text-headline-lg text-primary">Panel Territorial</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">
+      Salida: {{ $puntoCero['nombre'] }} ({{ $puntoCero['lat'] }}, {{ $puntoCero['lng'] }}) · Datos simulados de referencia.
+    </p>
+  </div>
+  <nav class="flex flex-wrap gap-2" aria-label="Filtrar solicitudes">
+    @foreach ($filtros as $clave => $texto)
+      <a href="{{ route('dashboard.promotor', ['estado' => $clave]) }}" class="px-3 py-1.5 rounded-full font-label-md text-label-md {{ $filtro === $clave ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant hover:bg-surface-variant' }}">{{ $texto }}</a>
+    @endforeach
+  </nav>
+</section>
 
-      <!-- Summary Metric Bento Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
-        <!-- Stat 1 -->
-        <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
-          <div class="flex items-center justify-between text-on-surface-variant">
-            <span class="font-label-sm text-label-sm uppercase tracking-wide">Solicitudes Pendientes</span>
-            <span class="material-symbols-outlined text-[20px] text-primary">pending_actions</span>
-          </div>
-          <div class="mt-2 flex items-baseline gap-2">
-            <span class="font-headline-xl text-headline-xl text-primary font-bold">14</span>
-            <span class="font-body-md text-body-md text-on-surface-variant">visitas en trocha</span>
-          </div>
-          <div class="mt-3 flex items-center gap-1.5 text-label-sm font-label-sm text-on-secondary-container">
-            <span class="material-symbols-outlined text-[16px] text-primary">terrain</span>
-            <span>8 veredas dispersas programadas</span>
-          </div>
-        </div>
-        <!-- Stat 2 -->
-        <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
-          <div class="flex items-center justify-between text-on-surface-variant">
-            <span class="font-label-sm text-label-sm uppercase tracking-wide">Pacientes Priorizados</span>
-            <span class="material-symbols-outlined text-[20px] text-tertiary">priority_high</span>
-          </div>
-          <div class="mt-2 flex items-baseline gap-2">
-            <span class="font-headline-xl text-headline-xl text-primary font-bold">6</span>
-            <span class="font-body-md text-body-md text-tertiary font-semibold">alta vigilancia</span>
-          </div>
-          <div class="mt-3 font-label-sm text-label-sm text-on-surface-variant truncate">
-            3 gestantes · 2 crónicos · 1 menor sin vacunas
-          </div>
-        </div>
-        <!-- Stat 3 -->
-        <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
-          <div class="flex items-center justify-between text-on-surface-variant">
-            <span class="font-label-sm text-label-sm uppercase tracking-wide">Brigadas en Campo Hoy</span>
-            <span class="material-symbols-outlined text-[20px] text-primary">group_work</span>
-          </div>
-          <div class="mt-2 flex items-baseline gap-2">
-            <span class="font-headline-xl text-headline-xl text-primary font-bold">2</span>
-            <span class="font-body-md text-body-md text-on-surface-variant">equipos activos</span>
-          </div>
-          <div class="mt-3 font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
-            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span> Campero 4x4 N° 2</span>
-            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Cuadrilla a pie</span>
-          </div>
-        </div>
-        <!-- Stat 4 -->
-        <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
-          <div class="flex items-center justify-between text-on-surface-variant">
-            <span class="font-label-sm text-label-sm uppercase tracking-wide">Biológicos en Cadena Fría</span>
-            <span class="material-symbols-outlined text-[20px] text-primary">ac_unit</span>
-          </div>
-          <div class="mt-2 flex items-baseline gap-2">
-            <span class="font-headline-xl text-headline-xl text-primary font-bold">48</span>
-            <span class="font-body-md text-body-md text-on-surface-variant">termos alistados</span>
-          </div>
-          <div class="mt-3 flex items-center justify-between font-label-sm text-label-sm text-on-secondary-container">
-            <span>Rango: <strong>+3.8 °C</strong> (Óptimo)</span>
-            <span class="text-primary font-bold">PAI + Rabia</span>
-          </div>
-        </div>
-      </div>
+<section class="grid grid-cols-2 md:grid-cols-4 gap-space-md">
+  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/20">
+    <span class="font-label-sm text-label-sm text-primary font-bold">PENDIENTES</span>
+    <p class="font-headline-lg text-headline-lg text-on-surface">{{ $stats['pendientes'] }}</p>
+  </div>
+  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/20">
+    <span class="font-label-sm text-label-sm text-primary font-bold">PROGRAMADAS</span>
+    <p class="font-headline-lg text-headline-lg text-on-surface">{{ $stats['programadas'] }}</p>
+  </div>
+  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/20">
+    <span class="font-label-sm text-label-sm text-primary font-bold">ATENDIDAS</span>
+    <p class="font-headline-lg text-headline-lg text-on-surface">{{ $stats['atendidas'] }}</p>
+  </div>
+  <div class="bg-error-container text-on-error-container rounded-xl p-space-md shadow-sm">
+    <span class="font-label-sm text-label-sm font-bold">PRIORIDAD CRÍTICA</span>
+    <p class="font-headline-lg text-headline-lg">{{ $stats['criticas'] }}</p>
+  </div>
+</section>
 
-      <!-- Field Atmosphere Banner -->
-      <div class="w-full bg-surface-container-low rounded-xl overflow-hidden shadow-sm flex flex-col md:flex-row items-center justify-between">
-        <div class="p-space-lg max-w-xl flex flex-col gap-2">
-          <span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Atención Integral en Casa de Familia</span>
-          <h2 class="font-headline-md text-headline-md text-primary">
-            Cuidado temprano en la montaña: cada vereda cuenta
-          </h2>
-          <p class="font-body-md text-body-md text-on-surface-variant">
-            Evaluación pediátrica, tamizaje de tensión arterial y seguimiento a madres gestantes directamente en sus fincas, respetando los tiempos y saberes de la comunidad campesina.
-          </p>
-          <div class="flex items-center gap-space-md pt-2 text-label-sm font-label-sm text-on-surface font-semibold">
-            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-[18px]">medical_services</span> Maletín de diagnóstico completo</span>
-            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-[18px]">escalator_warning</span> Valoración integral madre e hijo</span>
-          </div>
-        </div>
-        <div class="w-full md:w-80 h-56 md:h-full min-h-[220px] relative overflow-hidden">
-          <img class="w-full h-full object-cover" data-alt="A documentary style close photograph of a Colombian rural community health worker..." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCA9w2waIdzZZaNS0r5szWlTac3vWwVSB9lX8LH_4N-kPfi-LbitWCWwqOVIWM2GTb2PhCYEdAiPmyzFwWMPWuDH8NufQNd4PA-CwnET_SAjHtS_ZGFCSS9QvdH2K5fgm8fkrzadLamARmOlClbijA9hz_L5FBmhM7GSQzU97o89bVlkMR4VhEorAWuRk7r4n3B1wvKv9wlG0joArwpjIP81nUzeu0Ds8FqgcyfO0Q" />
-        </div>
-      </div>
-
-      <!-- Main Widescreen Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
-        
-        <!-- LEFT COLUMN (8 cols): Hoja de Ruta -->
-        <section class="lg:col-span-8 flex flex-col gap-space-md">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary text-[24px]">route</span>
-              <h2 class="font-headline-sm text-headline-sm text-primary">
-                Hoja de Ruta y Paradas Programadas del Día
-              </h2>
-            </div>
-            <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Orden secuencial optimizado por altimetría</span>
-          </div>
-
-          <!-- Stop Cards Stream -->
-          <div class="flex flex-col gap-space-md">
-            <!-- PARADA 1 -->
-            <article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm transition-all hover:shadow-md">
-              <div class="flex flex-col gap-space-sm">
-                <div class="flex flex-wrap items-start justify-between gap-space-xs">
-                  <div class="flex items-center gap-space-xs">
-                    <span class="w-8 h-8 rounded-full bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center font-bold">1</span>
-                    <div>
-                      <div class="flex items-center gap-2">
-                        <h3 class="font-headline-sm text-headline-sm text-on-surface">Vereda El Salitre · Finca La Esperanza</h3>
-                        <span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-primary text-on-primary font-bold">Prioridad Alta</span>
-                      </div>
-                      <span class="font-body-md text-body-md text-on-surface-variant font-medium">Familia Martínez Gómez</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold">
-                    <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                    <span>En camino (ETA 10:15 AM)</span>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-xs bg-surface-container-low p-space-sm rounded-lg text-on-surface">
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Motivo de Intervención</span>
-                    <span class="font-body-bold text-body-bold text-primary">Gestante semana 32 + control menor</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Medio de Transporte</span>
-                    <span class="font-body-md text-body-md font-semibold flex items-center gap-1">
-                      <span class="material-symbols-outlined text-[18px]">directions_car</span> Campero 4x4 N° 2
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Coordenadas / Hito</span>
-                    <span class="font-body-md text-body-md text-on-surface-variant">4°34'12"N, 73°58'21"W (Tranquera Roja)</span>
-                  </div>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-between gap-space-sm pt-2">
-                  <div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
-                    <span class="material-symbols-outlined text-tertiary text-[18px]">warning</span>
-                    <span>Revisión ecografía previa + suplementación hierro</span>
-                  </div>
-                  <div class="flex flex-wrap items-center gap-space-xs">
-                    <button class="h-10 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
-                      <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
-                      Ver Ficha Clínica
-                    </button>
-                    <button class="h-10 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
-                      <span class="material-symbols-outlined text-[18px]">explore</span>
-                      Mapa Trocha
-                    </button>
-                    <button class="h-10 px-space-sm rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
-                      <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                      Marcar Atendido
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <!-- PARADA 2 -->
-            <article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm transition-all hover:shadow-md">
-              <div class="flex flex-col gap-space-sm">
-                <div class="flex flex-wrap items-start justify-between gap-space-xs">
-                  <div class="flex items-center gap-space-xs">
-                    <span class="w-8 h-8 rounded-full bg-secondary text-on-secondary font-label-lg text-label-lg flex items-center justify-center font-bold">2</span>
-                    <div>
-                      <div class="flex items-center gap-2">
-                        <h3 class="font-headline-sm text-headline-sm text-on-surface">Vereda Aguadas · Casa Comunal</h3>
-                        <span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-container text-on-secondary-container font-semibold">Prioridad Media</span>
-                      </div>
-                      <span class="font-body-md text-body-md text-on-surface-variant font-medium">Don Ramón Morales (74 años)</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
-                    <span class="material-symbols-outlined text-[16px]">schedule</span>
-                    <span>Pendiente (11:45 AM aprox)</span>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-xs bg-surface-container-low p-space-sm rounded-lg text-on-surface">
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Motivo de Intervención</span>
-                    <span class="font-body-bold text-body-bold text-primary">Tensión arterial + entrega Losartán</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Acceso y Transporte</span>
-                    <span class="font-body-md text-body-md font-semibold flex items-center gap-1">
-                      <span class="material-symbols-outlined text-[18px]">hiking</span> Camino a pie 25 min desde trocha
-                    </span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Observación Terreno</span>
-                    <span class="font-body-md text-body-md text-on-surface-variant">Camino empedrado húmedo, bastón de apoyo</span>
-                  </div>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-between gap-space-sm pt-2">
-                  <div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
-                    <span class="material-symbols-outlined text-primary text-[18px]">medication</span>
-                    <span>Lote medicamentos verificado en maleta N° 1</span>
-                  </div>
-                  <div class="flex flex-wrap items-center gap-space-xs">
-                    <button class="h-10 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
-                      <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
-                      Ver Ficha
-                    </button>
-                    <button class="h-10 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
-                      <span class="material-symbols-outlined text-[18px]">edit_calendar</span>
-                      Reprogramar
-                    </button>
-                    <button class="h-10 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
-                      <span class="material-symbols-outlined text-[18px]">near_me</span>
-                      Ruta a Pie
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <!-- PARADA 3 -->
-            <article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm transition-all hover:shadow-md">
-              <div class="flex flex-col gap-space-sm">
-                <div class="flex flex-wrap items-start justify-between gap-space-xs">
-                  <div class="flex items-center gap-space-xs">
-                    <span class="w-8 h-8 rounded-full bg-secondary-fixed-dim text-on-secondary-fixed font-label-lg text-label-lg flex items-center justify-center font-bold">3</span>
-                    <div>
-                      <div class="flex items-center gap-2">
-                        <h3 class="font-headline-sm text-headline-sm text-on-surface">Vereda San Lorenzo · Escuela Rural</h3>
-                        <span class="px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-primary text-on-primary font-bold">Prioridad Alta</span>
-                      </div>
-                      <span class="font-body-md text-body-md text-on-surface-variant font-medium">Jornada Escolar PAI · 5 Niños convocados</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
-                    <span class="material-symbols-outlined text-[16px]">event</span>
-                    <span>Programada 2:00 PM</span>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-xs bg-surface-container-low p-space-sm rounded-lg text-on-surface">
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Intervención Colectiva</span>
-                    <span class="font-body-bold text-body-bold text-primary">Esquema regular + Talla y Peso</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Responsable en Punto</span>
-                    <span class="font-body-md text-body-md font-semibold">Profesora Nubia Riaño (Enlace)</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Conectividad estimada</span>
-                    <span class="font-body-md text-body-md text-on-surface-variant">Sin señal celular · Registro local activo</span>
-                  </div>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-between gap-space-sm pt-2">
-                  <div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
-                    <span class="material-symbols-outlined text-primary text-[18px]">vaccines</span>
-                    <span>Termo Portátil N° 3 asignado exclusivamente</span>
-                  </div>
-                  <div class="flex flex-wrap items-center gap-space-xs">
-                    <button class="h-10 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
-                      <span class="material-symbols-outlined text-[18px]">checklist</span>
-                      Listado Escolar PAI
-                    </button>
-                    <button class="h-10 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
-                      <span class="material-symbols-outlined text-[18px]">map</span>
-                      Ver Ubicación
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <!-- Altimetry Profile Graphic -->
-          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm mt-space-xs">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-[20px]">elevation</span>
-                <span class="font-headline-sm text-headline-sm text-primary">Perfil Altimétrico de la Ruta de Hoy</span>
-              </div>
-              <span class="font-label-sm text-label-sm text-on-surface-variant">Desnivel acumulado: +840m / -620m</span>
-            </div>
-            <div class="w-full h-24 bg-surface-container-low rounded-lg p-2 flex flex-col justify-end">
-              <svg class="w-full h-full text-primary" fill="none" preserveaspectratio="none" viewbox="0 0 700 80">
-                <path d="M 0,65 L 120,40 L 250,55 L 420,15 L 560,35 L 700,50 L 700,80 L 0,80 Z" fill="currentColor" fill-opacity="0.12"></path>
-                <path d="M 0,65 L 120,40 L 250,55 L 420,15 L 560,35 L 700,50" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
-                <circle class="animate-pulse" cx="120" cy="40" fill="#00453f" r="4.5"></circle>
-                <circle cx="250" cy="55" fill="#56615c" r="4.5"></circle>
-                <circle cx="420" cy="15" fill="#755b00" r="4.5"></circle>
-                <circle cx="700" cy="50" fill="#00453f" r="4.5"></circle>
-              </svg>
-              <div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant px-1 pt-1">
-                <span>Choachí Centro (1,927 msnm)</span>
-                <span>El Salitre (2,180 msnm)</span>
-                <span>Aguadas (2,050 msnm)</span>
-                <span>San Lorenzo Alto (2,450 msnm)</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- RIGHT COLUMN (4 cols): Map, Cold Chain & Alerts -->
-        <aside class="lg:col-span-4 flex flex-col gap-space-md">
-          <!-- Visor de Cobertura -->
-          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-[22px]">explore</span>
-                <h3 class="font-headline-sm text-headline-sm text-primary">Mini Visor de Cobertura</h3>
-              </div>
-              <span class="font-label-sm text-label-sm text-primary font-bold">GPS Activo</span>
-            </div>
-            <div class="w-full h-56 rounded-lg relative overflow-hidden bg-surface-container flex items-center justify-center shadow-inner" data-location="Choachi, Cundinamarca, Colombia" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAR0WlDOPxoQBRY0oHECci2UFCvGR0q3Sr2G87MlFKSgHtl05jAbuHKwt2hsEF33B9Rk7-eu1iANU0kk8NogZG8Vj05UdAe3PTBQW6gbPeqNGdiv3rcVrAgFxHPHSfUfV7mLuB34BQ_dUKiZtbNi3Z7P4xTffV25ygv7SbEEFn9YpX0dv1Z5KY061n6We3FDmP_9j4Uoc0PhADXz9uCqhhOHPYy-tJJDLFuEdXi1ag')">
-              <div class="absolute inset-0 bg-primary/25 mix-blend-multiply pointer-events-none"></div>
-              <div class="absolute bottom-2 left-2 right-2 bg-surface-container-lowest/95 backdrop-blur-md p-2 rounded-lg flex items-center justify-between text-on-surface shadow-sm">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary text-[18px]">near_me</span>
-                  <span class="font-label-sm text-label-sm font-bold">Campero 4x4 N° 2 en movimiento</span>
-                </div>
-                <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Vel: 22 km/h</span>
-              </div>
-            </div>
-            <p class="font-label-sm text-label-sm text-on-surface-variant leading-relaxed">
-              Trazado sincronizado para navegación fuera de cobertura. Incluye senderos de herradura y pasos de quebrada validados por líderes veredales.
-            </p>
-          </div>
-
-          <!-- Inventario del Botiquín -->
-          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-[22px]">inventory_2</span>
-                <h3 class="font-headline-sm text-headline-sm text-primary">Inventario en Vehículo</h3>
-              </div>
-              <span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold">Auditado hoy</span>
-            </div>
-            <div class="flex flex-col gap-2 mt-1">
-              <div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary text-[18px]">vaccines</span>
-                  <span class="font-body-md text-body-md text-on-surface font-medium">Vacunas Pentavalente</span>
-                </div>
-                <span class="font-body-bold text-body-bold text-primary">12 dosis</span>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary text-[18px]">shield</span>
-                  <span class="font-body-md text-body-md text-on-surface font-medium">Sueros Antiofídicos</span>
-                </div>
-                <span class="font-body-bold text-body-bold text-primary">2 ampollas</span>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary text-[18px]">favorite</span>
-                  <span class="font-body-md text-body-md text-on-surface font-medium">Doppler Fetal Portátil</span>
-                </div>
-                <span class="font-body-bold text-body-bold text-primary">1 unidad</span>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary text-[18px]">monitor_heart</span>
-                  <span class="font-body-md text-body-md text-on-surface font-medium">Tensiómetros Aneroide</span>
-                </div>
-                <span class="font-body-bold text-body-bold text-primary">2 unidades</span>
-              </div>
-            </div>
-            <div class="mt-2 p-2.5 rounded-lg bg-surface-container flex items-center justify-between">
-              <div class="flex items-center gap-2 text-primary font-body-bold text-body-bold">
-                <span class="material-symbols-outlined text-[20px]">thermostat</span>
-                <span>Termo Coleman 9L: +3.8 °C</span>
-              </div>
-              <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">14h de autonomía</span>
-            </div>
-          </div>
-
-          <!-- Alertas del Territorio -->
-          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm border-l-4 border-l-tertiary">
-            <div class="flex items-center gap-2 text-tertiary">
-              <span class="material-symbols-outlined text-[22px]">notification_important</span>
-              <h3 class="font-headline-sm text-headline-sm text-tertiary">Alertas del Territorio</h3>
-            </div>
-            <div class="flex flex-col gap-2">
-              <div class="p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1">
-                <div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface font-bold">
-                  <span class="flex items-center gap-1 text-primary">
-                    <span class="material-symbols-outlined text-[16px]">traffic</span>
-                    Paso Quebrada El Salto
-                  </span>
-                  <span class="text-on-surface-variant">07:15 AM</span>
-                </div>
-                <p class="font-label-md text-label-md text-on-surface-variant">
-                  Paso habilitado en puente de madera provisional. Precaución por lluvias moderadas pronosticadas para la tarde.
-                </p>
-              </div>
-              <div class="p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1">
-                <div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface font-bold">
-                  <span class="flex items-center gap-1 text-primary">
-                    <span class="material-symbols-outlined text-[16px]">call</span>
-                    Radio Base Frecuencia 4
-                  </span>
-                  <span class="text-on-surface-variant">Enlace activo</span>
-                </div>
-                <p class="font-label-md text-label-md text-on-surface-variant">
-                  Puesto de Salud Ubaque atento como respaldo de evacuación si se requiere puente aéreo o ambulancia fluvial.
-                </p>
-              </div>
-            </div>
-          </div>
-        </aside>
-      </div>
-
+<section class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-space-md lg:p-space-lg flex flex-col gap-space-md" id="ruta-sugerida">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[26px]">alt_route</span>
+      <h2 class="font-headline-sm text-headline-sm text-primary">Ruta sugerida de hoy</h2>
     </div>
+    @if ($ruta)
+      @php
+        $waypoints = collect($paradas)->slice(0, -1)->map(fn ($p) => $p['lat'].','.$p['lng'])->implode('|');
+        $ultima = collect($paradas)->last();
+        $mapsUrl = 'https://www.google.com/maps/dir/?api=1&origin='.$puntoCero['lat'].','.$puntoCero['lng'].'&destination='.$ultima['lat'].','.$ultima['lng'].($waypoints ? '&waypoints='.urlencode($waypoints) : '').'&travelmode=driving';
+      @endphp
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-surface-container font-label-md text-label-md text-primary">{{ count($paradas) }} paradas · {{ $ruta['distancia_total_km'] }} km (línea recta, Haversine)</span>
+        <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="h-10 px-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">map</span> Abrir en Google Maps
+        </a>
+      </div>
+    @endif
+  </div>
+
+  @if (! $ruta)
+    <div class="bg-surface-container-low rounded-xl p-space-lg text-center">
+      <span class="material-symbols-outlined text-primary text-[40px]">inbox</span>
+      <p class="font-body-bold text-body-bold text-on-surface mt-2">No hay solicitudes activas</p>
+      <p class="font-body-md text-body-md text-on-surface-variant">Cuando un ciudadano pida una visita aparecerá aquí con su ruta.</p>
+    </div>
+  @else
+    <p class="font-body-md text-body-md text-on-surface-variant">
+      Se visitan primero las veredas con mayor prioridad (vulnerabilidad de la vereda + urgencia declarada) y se ordenan por vecino más cercano partiendo de {{ $puntoCero['nombre'] }}.
+    </p>
+    <ol class="flex flex-col gap-space-sm">
+      <li class="flex items-center gap-3 bg-surface-container-low rounded-xl p-space-sm">
+        <span class="w-9 h-9 rounded-full bg-secondary text-on-secondary flex items-center justify-center material-symbols-outlined text-[20px]">local_hospital</span>
+        <div>
+          <p class="font-body-bold text-body-bold text-on-surface">Salida · {{ $puntoCero['nombre'] }}</p>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">{{ $puntoCero['lat'] }}, {{ $puntoCero['lng'] }}</p>
+        </div>
+      </li>
+      @foreach ($paradas as $p)
+        <li class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-3">
+              <span class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">{{ $p['orden'] }}</span>
+              <div>
+                <h3 class="font-body-bold text-body-bold text-on-surface">Vereda {{ $p['nombre'] }}</h3>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">{{ $p['lat'] }}, {{ $p['lng'] }} · +{{ $p['distancia_desde_anterior_km'] }} km desde la parada anterior</p>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full font-label-sm text-label-sm {{ $prioClase($p['vulnerabilidad']) }}">Prioridad máx. {{ $p['vulnerabilidad'] }}</span>
+          </div>
+          <div class="flex flex-col gap-2">
+            @foreach ($p['solicitudes'] as $s)
+              @include('dashboards.partials.solicitud-fila', ['s' => $s])
+            @endforeach
+          </div>
+        </li>
+      @endforeach
+    </ol>
+
+    @if ($fueraDeRuta->isNotEmpty())
+      <div class="bg-surface-container rounded-xl p-space-md">
+        <h3 class="font-body-bold text-body-bold text-on-surface">En cola para la siguiente jornada</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">
+          La ruta cubre las 5 veredas más prioritarias. Siguen pendientes:
+          {{ $fueraDeRuta->map(fn ($v) => $v['nombre'].' (prioridad '.$v['vulnerabilidad'].')')->implode(', ') }}.
+        </p>
+      </div>
+    @endif
+  @endif
+</section>
+
+<section class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-space-md lg:p-space-lg flex flex-col gap-space-md" id="solicitudes">
+  <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-primary text-[26px]">groups</span>
+    <h2 class="font-headline-sm text-headline-sm text-primary">Solicitudes recibidas ({{ $filtros[$filtro] ?? 'Activas' }})</h2>
+  </div>
+  @forelse ($solicitudes as $s)
+    @include('dashboards.partials.solicitud-fila', ['s' => $s])
+  @empty
+    <p class="font-body-md text-body-md text-on-surface-variant">No hay solicitudes con este filtro.</p>
+  @endforelse
+</section>
+</div>
   </main>
 
   <!-- Footer -->

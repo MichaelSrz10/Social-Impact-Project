@@ -53,18 +53,38 @@
 <div>
 <label class="font-label-sm text-label-sm text-on-surface-variant block mb-1.5">Tipo de perfil</label>
 <div class="grid grid-cols-2 p-1 bg-surface-container rounded-lg gap-1 max-w-md">
-<label class="flex items-center justify-center gap-2 py-2 px-3 rounded cursor-pointer font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm has-[:checked]:bg-surface-container-lowest has-[:checked]:text-primary transition-all">
-<input checked="" class="hidden" name="user-type" type="radio" value="ciudadano"/>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="user-type" type="radio" value="ciudadano" {{ old('user-type', 'ciudadano') === 'ciudadano' ? 'checked' : '' }}/>
+<span class="flex items-center justify-center gap-2 py-2 px-3 rounded font-label-md text-label-md text-on-surface-variant transition-all peer-checked:bg-primary peer-checked:text-on-primary peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
 <span class="material-symbols-outlined text-lg">person</span>
 <span>Ciudadano</span>
+</span>
 </label>
-<label class="flex items-center justify-center gap-2 py-2 px-3 rounded cursor-pointer font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all">
-<input class="hidden" name="user-type" type="radio" value="medico"/>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="user-type" type="radio" value="medico" {{ old('user-type') === 'medico' ? 'checked' : '' }}/>
+<span class="flex items-center justify-center gap-2 py-2 px-3 rounded font-label-md text-label-md text-on-surface-variant transition-all peer-checked:bg-primary peer-checked:text-on-primary peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
 <span class="material-symbols-outlined text-lg">medical_services</span>
 <span>Personal de Salud</span>
+</span>
 </label>
 </div>
+<div class="{{ old('user-type') === 'medico' ? '' : 'hidden' }} mt-3 max-w-md" id="promotor-code-wrap">
+<label class="font-label-sm text-label-sm text-on-surface-variant block mb-1" for="reg-codigo-promotor">Código institucional de personal de salud</label>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none border @error('codigo_promotor') border-error @else border-transparent @enderror focus:border-primary/30" id="reg-codigo-promotor" name="codigo_promotor" type="text" autocomplete="off" placeholder="Código entregado por tu E.S.E." value="{{ old('codigo_promotor') }}"/>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Solicítalo a la coordinación de tu E.S.E. para crear una cuenta de promotor.</p>
 </div>
+</div>
+<script>
+  document.querySelectorAll('input[name="user-type"]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      var esMedico = document.querySelector('input[name="user-type"]:checked').value === 'medico';
+      var wrap = document.getElementById('promotor-code-wrap');
+      var input = document.getElementById('reg-codigo-promotor');
+      wrap.classList.toggle('hidden', !esMedico);
+      input.required = esMedico;
+    });
+  });
+</script>
 <!-- Campos del formulario en 2 columnas -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <!-- Nombres y Apellidos -->

@@ -7,6 +7,14 @@ Route::get('/', function () {
     return view('index');
 })->name('home');
 
+Route::get('/user', function () {
+    return view('dashboards.user');
+});
+
+Route::get('/promotor', function () {
+    return view('dashboards.promotor');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');

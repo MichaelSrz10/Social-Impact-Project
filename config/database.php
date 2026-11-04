@@ -59,9 +59,25 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? (function () {
+                $options = [];
+                $sslCaAttr = defined('Pdo\Mysql::ATTR_SSL_CA') ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA;
+                $sslVerifyAttr = defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT') ? \Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT : \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
+
+                $caPath = env('MYSQL_ATTR_SSL_CA');
+                if ($caPath) {
+                    if (! file_exists($caPath)) {
+                        throw new \InvalidArgumentException("El certificado CA de MySQL especificado en MYSQL_ATTR_SSL_CA no existe en la ruta: {$caPath}");
+                    }
+                    $options[$sslCaAttr] = $caPath;
+                }
+
+                $options[$sslVerifyAttr] = env('MYSQL_SSL_VERIFY_SERVER_CERT') !== null
+                    ? filter_var(env('MYSQL_SSL_VERIFY_SERVER_CERT'), FILTER_VALIDATE_BOOLEAN)
+                    : true;
+
+                return $options;
+            })() : [],
         ],
 
         'mariadb' => [
@@ -79,9 +95,25 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? (function () {
+                $options = [];
+                $sslCaAttr = defined('Pdo\Mysql::ATTR_SSL_CA') ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA;
+                $sslVerifyAttr = defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT') ? \Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT : \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
+
+                $caPath = env('MYSQL_ATTR_SSL_CA');
+                if ($caPath) {
+                    if (! file_exists($caPath)) {
+                        throw new \InvalidArgumentException("El certificado CA de MySQL especificado en MYSQL_ATTR_SSL_CA no existe en la ruta: {$caPath}");
+                    }
+                    $options[$sslCaAttr] = $caPath;
+                }
+
+                $options[$sslVerifyAttr] = env('MYSQL_SSL_VERIFY_SERVER_CERT') !== null
+                    ? filter_var(env('MYSQL_SSL_VERIFY_SERVER_CERT'), FILTER_VALIDATE_BOOLEAN)
+                    : true;
+
+                return $options;
+            })() : [],
         ],
 
         'pgsql' => [

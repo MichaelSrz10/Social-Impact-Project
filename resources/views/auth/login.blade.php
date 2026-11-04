@@ -151,7 +151,7 @@
         </div>
         <span class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">RutaSalud Rural</span>
       </div>
-      <a class="inline-flex items-center gap-1 font-label-md text-label-md text-secondary hover:text-primary transition-colors" href="#">
+      <a class="inline-flex items-center gap-1 font-label-md text-label-md text-secondary hover:text-primary transition-colors" href="{{ route('home') }}">
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
         <span>Volver</span>
       </a>
@@ -191,51 +191,63 @@
           </div>
         </div>
 
+        @if (session('status'))
+          <div class="mb-4 p-3 rounded-lg bg-surface-container text-primary font-label-md text-sm border border-primary/20">
+            {{ session('status') }}
+          </div>
+        @endif
+
+        @if ($errors->any())
+          <div class="mb-4 p-3 rounded-lg bg-error-container text-on-error-container font-label-md text-sm border border-error/20">
+            @foreach ($errors->all() as $error)
+              <p>{{ $error }}</p>
+            @endforeach
+          </div>
+        @endif
+
         <!-- Form -->
-        <form class="space-y-space-md" id="login-form" onsubmit="handleLoginSubmit(event)">
-          <!-- Document Field -->
+        <form class="space-y-space-md" id="login-form" method="POST" action="{{ route('login') }}">
+          @csrf
+          <!-- Email Field -->
           <div>
-            <label class="block font-label-md text-label-md text-on-surface mb-1.5" for="doc-number">Documento de Identidad</label>
-            <div class="flex gap-2">
-              <div class="relative w-32 shrink-0">
-                <select class="w-full h-[50px] bg-surface-container-low text-on-surface font-body-md text-body-md px-3 pr-8 rounded-lg outline-none appearance-none focus:bg-surface-container transition-colors" id="doc-type">
-                  <option value="CC">C.C.</option>
-                  <option value="TI">T.I.</option>
-                  <option value="CE">C.E.</option>
-                  <option value="PPT">PPT</option>
-                </select>
-                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-secondary text-[18px]">expand_more</span>
-              </div>
-              <div class="relative flex-1">
-                <input class="w-full h-[50px] bg-surface-container-low text-on-surface font-body-md text-body-md px-4 rounded-lg outline-none focus:bg-surface-container transition-colors placeholder:text-outline" id="doc-number" placeholder="Número de documento" required="" type="text" />
-              </div>
+            <label class="block font-label-md text-label-md text-on-surface mb-1.5" for="email">Correo Electrónico</label>
+            <div class="relative flex-1">
+              <input class="w-full h-[50px] bg-surface-container-low text-on-surface font-body-md text-body-md px-4 rounded-lg outline-none focus:bg-surface-container transition-colors placeholder:text-outline border @error('email') border-error @else border-transparent @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="tu.correo@ejemplo.com" required autofocus type="email" />
             </div>
+            @error('email')
+              <span class="text-xs text-error mt-1 block">{{ $message }}</span>
+            @enderror
           </div>
 
           <!-- Password Field -->
           <div>
             <div class="flex items-center justify-between mb-1.5">
               <label class="block font-label-md text-label-md text-on-surface" for="password">Contraseña</label>
-              <a class="font-label-sm text-label-sm text-primary hover:underline" href="#">¿Olvidaste tu contraseña?</a>
+              @if (Route::has('password.request'))
+                <a class="font-label-sm text-label-sm text-primary hover:underline" href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+              @endif
             </div>
             <div class="relative flex items-center">
-              <input class="w-full h-[50px] bg-surface-container-low text-on-surface font-body-md text-body-md px-4 pr-11 rounded-lg outline-none focus:bg-surface-container transition-colors placeholder:text-outline" id="password" placeholder="••••••••" required="" type="password" />
+              <input class="w-full h-[50px] bg-surface-container-low text-on-surface font-body-md text-body-md px-4 pr-11 rounded-lg outline-none focus:bg-surface-container transition-colors placeholder:text-outline border @error('password') border-error @else border-transparent @enderror" id="password" name="password" placeholder="••••••••" required type="password" />
               <button class="absolute right-3 text-secondary hover:text-on-surface" onclick="togglePasswordVisibility('password', this)" type="button">
                 <span class="material-symbols-outlined text-[20px]">visibility</span>
               </button>
             </div>
+            @error('password')
+              <span class="text-xs text-error mt-1 block">{{ $message }}</span>
+            @enderror
           </div>
 
           <!-- Remember Me Checkbox -->
           <div class="flex items-center pt-0.5">
             <label class="flex items-center gap-2 cursor-pointer select-none">
-              <input checked="" class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer" id="remember-session" type="checkbox" />
+              <input class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer" id="remember-session" name="remember" type="checkbox" />
               <span class="font-body-md text-body-md text-on-surface-variant">Recordar sesión</span>
             </label>
           </div>
 
           <!-- Submit Button -->
-          <button class="w-full h-[50px] bg-primary text-on-primary rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md hover:bg-primary-container transition-colors active:scale-[0.99] mt-2" id="submit-btn" type="submit">
+          <button class="w-full h-[50px] bg-primary text-on-primary rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md hover:bg-primary-container transition-colors active:scale-[0.99] mt-2 cursor-pointer" id="submit-btn" type="submit">
             <span>Ingresar a mi cuenta</span>
             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
@@ -244,7 +256,7 @@
         <!-- Register Link -->
         <div class="pt-6 border-t border-surface-container mt-6 text-center">
           <p class="font-body-md text-body-md text-on-surface-variant">
-            ¿Aún no tienes cuenta? <a class="font-body-bold text-primary hover:underline" href="#">Regístrate aquí</a>
+            ¿Aún no tienes cuenta? <a class="font-body-bold text-primary hover:underline" href="{{ route('register') }}">Regístrate aquí</a>
           </p>
         </div>
       </div>
@@ -255,6 +267,36 @@
       <p>© 2025 RutaSalud Rural • Red Nacional ESE • MinSalud Colombia</p>
     </footer>
   </main>
+
+  <script>
+    function togglePasswordVisibility(fieldId, btn) {
+      const field = document.getElementById(fieldId);
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (field.type === 'password') {
+        field.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        field.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    function selectRole(role) {
+      const citizenTab = document.getElementById('role-tab-citizen');
+      const staffTab = document.getElementById('role-tab-staff');
+      if (role === 'citizen') {
+        citizenTab.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        citizenTab.classList.remove('text-on-surface-variant');
+        staffTab.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        staffTab.classList.add('text-on-surface-variant');
+      } else {
+        staffTab.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        staffTab.classList.remove('text-on-surface-variant');
+        citizenTab.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        citizenTab.classList.add('text-on-surface-variant');
+      }
+    }
+  </script>
 </body>
 
 </html>

@@ -7,10 +7,10 @@
 <img alt="Abuelos campesinos en Cundinamarca" class="absolute inset-0 w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJQpyi1eVc8nPA6BhVhLyvkfh2llfBymLYBjVTANo0cCT-fWdDDBDdzs5tiFNOuoLzwEU26WhE8eTmSZrQELE0eZI9i-izN2FgBwL6WQV57YpdkpkbsoNkJxU8MudCmF03TmPjhn9urSu9bXBcm5JEwU1ByaOGa9K0aNzgS-DLWVAepoZ3UPWB3EA0mZLiejlFiBhq9SCZW71WgqsFnCABknp4q6MKhFzRANVBQ0w"/>
 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"></div>
 <!-- Badge superior de marca -->
-<div class="relative z-10 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-sm px-3.5 py-1.5 rounded-full self-start shadow-sm">
+<a href="{{ route('home') }}" class="relative z-10 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-sm px-3.5 py-1.5 rounded-full self-start shadow-sm hover:opacity-90 transition-opacity">
 <span class="material-symbols-outlined text-primary text-xl">local_hospital</span>
 <span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">RutaSalud Rural</span>
-</div>
+</a>
 <!-- Tag y mensaje inferior -->
 <div class="relative z-10 text-white mt-auto pt-16">
 <div class="inline-flex items-center gap-1.5 bg-primary/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white mb-2.5">
@@ -30,13 +30,25 @@
 </div>
 <div class="flex items-center gap-1 text-on-surface-variant font-label-md text-sm shrink-0">
 <span>¿Ya tienes cuenta?</span>
-<a class="text-primary font-bold hover:underline inline-flex items-center gap-0.5" href="#">
+<a class="text-primary font-bold hover:underline inline-flex items-center gap-0.5" href="{{ route('login') }}">
 <span>Inicia sesión aquí</span>
 <span class="material-symbols-outlined text-sm">arrow_forward</span>
 </a>
 </div>
 </div>
-<form class="space-y-4" id="registro-form" onsubmit="event.preventDefault(); alert('Cuenta registrada exitosamente en RutaSalud Rural');">
+
+@if ($errors->any())
+<div class="mb-4 p-3 rounded-lg bg-error-container text-on-error-container font-label-md text-sm border border-error/20">
+  <ul class="list-disc list-inside space-y-0.5">
+    @foreach ($errors->all() as $error)
+      <li>{{ $error }}</li>
+    @endforeach
+  </ul>
+</div>
+@endif
+
+<form class="space-y-4" id="registro-form" method="POST" action="{{ route('register') }}">
+@csrf
 <!-- Tipo de Perfil -->
 <div>
 <label class="font-label-sm text-label-sm text-on-surface-variant block mb-1.5">Tipo de perfil</label>
@@ -59,30 +71,42 @@
 <div class="flex flex-col gap-1 md:col-span-2">
 <label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-nombre">Nombres y Apellidos completos</label>
 <div class="relative">
-<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border border-transparent focus:border-primary/30 transition-all" id="reg-nombre" placeholder="Ej. Rosalba Martínez Gómez" required="" type="text"/>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border @error('name') border-error @else border-transparent @enderror focus:border-primary/30 transition-all" id="reg-nombre" name="name" value="{{ old('name') }}" placeholder="Ej. Rosalba Martínez Gómez" required="" type="text"/>
 <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-xl">badge</span>
 </div>
+@error('name') <span class="text-xs text-error mt-0.5">{{ $message }}</span> @enderror
 </div>
+
+<!-- Correo Electrónico -->
+<div class="flex flex-col gap-1 md:col-span-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-email">Correo Electrónico</label>
+<div class="relative">
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border @error('email') border-error @else border-transparent @enderror focus:border-primary/30 transition-all" id="reg-email" name="email" value="{{ old('email') }}" placeholder="ejemplo@saludrural.gov.co" required="" type="email"/>
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-xl">mail</span>
+</div>
+@error('email') <span class="text-xs text-error mt-0.5">{{ $message }}</span> @enderror
+</div>
+
 <!-- Tipo de Documento -->
 <div class="flex flex-col gap-1">
 <label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-tipo-doc">Tipo de Documento</label>
-<select class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container border border-transparent focus:border-primary/30 transition-all" id="reg-tipo-doc" required="">
-<option value="CC">Cédula de Ciudadanía (C.C.)</option>
-<option value="TI">Tarjeta de Identidad (T.I.)</option>
-<option value="CE">Cédula de Extranjería (C.E.)</option>
-<option value="PPT">Permiso por Protección Temporal (PPT)</option>
+<select class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container border border-transparent focus:border-primary/30 transition-all" id="reg-tipo-doc" name="tipo_documento">
+<option value="CC" {{ old('tipo_documento') == 'CC' ? 'selected' : '' }}>Cédula de Ciudadanía (C.C.)</option>
+<option value="TI" {{ old('tipo_documento') == 'TI' ? 'selected' : '' }}>Tarjeta de Identidad (T.I.)</option>
+<option value="CE" {{ old('tipo_documento') == 'CE' ? 'selected' : '' }}>Cédula de Extranjería (C.E.)</option>
+<option value="PPT" {{ old('tipo_documento') == 'PPT' ? 'selected' : '' }}>Permiso por Protección Temporal (PPT)</option>
 </select>
 </div>
 <!-- Número de Documento -->
 <div class="flex flex-col gap-1">
 <label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-num-doc">Número de Documento</label>
-<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container border border-transparent focus:border-primary/30 transition-all" id="reg-num-doc" inputmode="numeric" placeholder="1085294821" required="" type="text"/>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container border border-transparent focus:border-primary/30 transition-all" id="reg-num-doc" name="numero_documento" value="{{ old('numero_documento') }}" inputmode="numeric" placeholder="1085294821" type="text"/>
 </div>
 <!-- Celular -->
 <div class="flex flex-col gap-1 md:col-span-2">
 <label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-telefono">Número de Celular</label>
 <div class="relative">
-<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border border-transparent focus:border-primary/30 transition-all" id="reg-telefono" inputmode="tel" placeholder="312 456 7890" required="" type="tel"/>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border border-transparent focus:border-primary/30 transition-all" id="reg-telefono" name="telefono" value="{{ old('telefono') }}" inputmode="tel" placeholder="312 456 7890" type="tel"/>
 <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-xl">phone_iphone</span>
 </div>
 </div>
@@ -96,35 +120,28 @@
 <!-- Municipio (Cundinamarca) -->
 <div class="flex flex-col gap-1">
 <label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-municipio">Municipio</label>
-<select class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container border border-transparent focus:border-primary/30 transition-all" id="reg-municipio" required="">
-<option disabled="" selected="" value="">Selecciona un municipio...</option>
-<option value="Choachí">Choachí</option>
-<option value="La Calera">La Calera</option>
-<option value="Fusagasugá">Fusagasugá</option>
-<option value="Facatativá">Facatativá</option>
-<option value="Chía">Chía</option>
-<option value="Zipaquirá">Zipaquirá</option>
-<option value="Cáqueza">Cáqueza</option>
-<option value="Guasca">Guasca</option>
-<option value="Fómeque">Fómeque</option>
-<option value="Ubaté">Ubaté</option>
-<option value="Villeta">Villeta</option>
-<option value="Pacho">Pacho</option>
-<option value="San Juan de Rioseco">San Juan de Rioseco</option>
-<option value="Girardot">Girardot</option>
-<option value="Soacha">Soacha</option>
-<option value="Sibaté">Sibaté</option>
-<option value="Tabio">Tabio</option>
-<option value="Tenjo">Tenjo</option>
-<option value="Sopó">Sopó</option>
-<option value="Gachancipá">Gachancipá</option>
+<select class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container border border-transparent focus:border-primary/30 transition-all" id="reg-municipio" name="municipio">
+<option disabled="" {{ old('municipio') ? '' : 'selected' }} value="">Selecciona un municipio...</option>
+<option value="Ubaté" {{ old('municipio') == 'Ubaté' ? 'selected' : '' }}>Ubaté</option>
+<option value="Sutatausa" {{ old('municipio') == 'Sutatausa' ? 'selected' : '' }}>Sutatausa</option>
+<option value="Cucunubá" {{ old('municipio') == 'Cucunubá' ? 'selected' : '' }}>Cucunubá</option>
+<option value="Lenguazaque" {{ old('municipio') == 'Lenguazaque' ? 'selected' : '' }}>Lenguazaque</option>
+<option value="Guachetá" {{ old('municipio') == 'Guachetá' ? 'selected' : '' }}>Guachetá</option>
+<option value="Carmen de Carupa" {{ old('municipio') == 'Carmen de Carupa' ? 'selected' : '' }}>Carmen de Carupa</option>
+<option value="Fúquene" {{ old('municipio') == 'Fúquene' ? 'selected' : '' }}>Fúquene</option>
+<option value="Zipaquirá" {{ old('municipio') == 'Zipaquirá' ? 'selected' : '' }}>Zipaquirá</option>
+<option value="Chía" {{ old('municipio') == 'Chía' ? 'selected' : '' }}>Chía</option>
+<option value="Facatativá" {{ old('municipio') == 'Facatativá' ? 'selected' : '' }}>Facatativá</option>
+<option value="Fusagasugá" {{ old('municipio') == 'Fusagasugá' ? 'selected' : '' }}>Fusagasugá</option>
+<option value="Pacho" {{ old('municipio') == 'Pacho' ? 'selected' : '' }}>Pacho</option>
+<option value="Villeta" {{ old('municipio') == 'Villeta' ? 'selected' : '' }}>Villeta</option>
 </select>
 </div>
 <!-- Vereda -->
 <div class="flex flex-col gap-1 md:col-span-2">
 <label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-vereda">Vereda o Sector</label>
 <div class="relative">
-<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border border-transparent focus:border-primary/30 transition-all" id="reg-vereda" placeholder="Escribe el nombre de tu vereda o sector" required="" type="text"/>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border border-transparent focus:border-primary/30 transition-all" id="reg-vereda" name="vereda" value="{{ old('vereda') }}" placeholder="Escribe el nombre de tu vereda o sector" type="text"/>
 <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-xl">terrain</span>
 </div>
 </div>
@@ -132,26 +149,28 @@
 <div class="flex flex-col gap-1">
 <label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-pass">Contraseña</label>
 <div class="relative">
-<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border border-transparent focus:border-primary/30 transition-all" id="reg-pass" placeholder="••••••••" required="" type="password"/>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border @error('password') border-error @else border-transparent @enderror focus:border-primary/30 transition-all" id="reg-pass" name="password" placeholder="••••••••" required="" type="password"/>
 <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-xl">lock</span>
 </div>
+@error('password') <span class="text-xs text-error mt-0.5">{{ $message }}</span> @enderror
 </div>
 <!-- Confirmar Contraseña -->
 <div class="flex flex-col gap-1">
 <label class="font-label-sm text-label-sm text-on-surface-variant" for="reg-confirm-pass">Confirmar Contraseña</label>
 <div class="relative">
-<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border border-transparent focus:border-primary/30 transition-all" id="reg-confirm-pass" placeholder="••••••••" required="" type="password"/>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-sm text-on-surface focus:outline-none focus:bg-surface-container pl-10 border border-transparent focus:border-primary/30 transition-all" id="reg-confirm-pass" name="password_confirmation" placeholder="••••••••" required="" type="password"/>
 <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-xl">lock_reset</span>
 </div>
 </div>
 </div>
 <!-- Términos y Privacidad -->
 <div class="flex items-center gap-2 pt-1">
-<input class="w-4 h-4 rounded text-primary accent-primary cursor-pointer" id="terms" required="" type="checkbox"/>
+<input class="w-4 h-4 rounded text-primary accent-primary cursor-pointer" id="terms" name="terms" value="1" required="" type="checkbox"/>
 <label class="font-label-sm text-label-sm text-on-surface-variant cursor-pointer select-none" for="terms">
-          Acepto los términos de uso y la política de privacidad de datos de salud.
-        </label>
+Acepto los términos de uso y la política de privacidad de datos de salud.
+</label>
 </div>
+@error('terms') <span class="text-xs text-error block mt-0.5">{{ $message }}</span> @enderror
 <!-- Botón de Envío -->
 <button class="w-full h-12 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm hover:opacity-95 transition-opacity flex items-center justify-center gap-2 cursor-pointer mt-2" type="submit">
 <span>Crear cuenta</span>

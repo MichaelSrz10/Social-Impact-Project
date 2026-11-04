@@ -47,7 +47,7 @@
 </div>
 @endif
 
-<form class="space-y-4" id="registro-form" method="POST" action="{{ route('register') }}">
+<form class="space-y-4" id="registro-form" method="POST" action="{{ route('register') }}" onsubmit="const btn = document.getElementById('btn-submit-registro'); if(btn){ btn.disabled = true; btn.classList.add('opacity-70', 'cursor-not-allowed'); btn.querySelector('span').textContent = 'Procesando registro...'; }">
 @csrf
 <!-- Tipo de Perfil -->
 <div>
@@ -172,7 +172,7 @@ Acepto los términos de uso y la política de privacidad de datos de salud.
 </div>
 @error('terms') <span class="text-xs text-error block mt-0.5">{{ $message }}</span> @enderror
 <!-- Botón de Envío -->
-<button class="w-full h-12 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm hover:opacity-95 transition-opacity flex items-center justify-center gap-2 cursor-pointer mt-2" type="submit">
+<button id="btn-submit-registro" class="w-full h-12 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm hover:opacity-95 transition-opacity flex items-center justify-center gap-2 cursor-pointer mt-2" type="submit">
 <span>Crear cuenta</span>
 <span class="material-symbols-outlined text-xl">check</span>
 </button>

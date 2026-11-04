@@ -51,12 +51,29 @@ class RegisteredUserController extends Controller
             ? 'promotor'
             : 'user';
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => $role,
-        ]);
+        try {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role' => $role,
+            ]);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException | \Illuminate\Database\QueryException $e) {
+            $existingUser = User::where('email', $validated['email'])->first();
+
+            if ($existingUser) {
+                if (Hash::check($validated['password'], $existingUser->password)) {
+                    Auth::login($existingUser);
+                    return redirect()->intended(route('dashboard', absolute: false));
+                }
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => 'Este correo electrónico ya se encuentra registrado. Por favor inicia sesión.',
+                ]);
+            }
+
+            throw $e;
+        }
 
         event(new Registered($user));
 

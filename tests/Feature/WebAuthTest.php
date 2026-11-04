@@ -189,4 +189,14 @@ class WebAuthTest extends TestCase
 
         $response->assertRedirect(route('dashboard.user'));
     }
+
+    public function test_https_is_detected_behind_reverse_proxy_with_forwarded_headers(): void
+    {
+        $response = $this->withHeaders([
+            'X-Forwarded-Proto' => 'https',
+            'X-Forwarded-Port' => '443',
+        ])->get('/login');
+
+        $response->assertStatus(200);
+    }
 }

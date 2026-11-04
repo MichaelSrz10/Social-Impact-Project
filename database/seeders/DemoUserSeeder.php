@@ -23,6 +23,7 @@ class DemoUserSeeder extends Seeder
             [
                 'name' => 'Admin Salud Rural',
                 'password' => Hash::make('secret123'),
+                'role' => 'admin',
             ]
         );
 
@@ -31,6 +32,7 @@ class DemoUserSeeder extends Seeder
             [
                 'name' => 'Admin Capitán',
                 'password' => Hash::make('Maraton2026*'),
+                'role' => 'admin',
             ]
         );
 
@@ -39,6 +41,7 @@ class DemoUserSeeder extends Seeder
             [
                 'name' => 'Auditor Seguridad',
                 'password' => Hash::make('Maraton2026*'),
+                'role' => 'promotor',
             ]
         );
 
@@ -47,6 +50,7 @@ class DemoUserSeeder extends Seeder
             [
                 'name' => 'Ciudadano Ubaté',
                 'password' => Hash::make('Maraton2026*'),
+                'role' => 'user',
             ]
         );
     }

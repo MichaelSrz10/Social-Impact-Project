@@ -182,12 +182,11 @@ class WebAuthTest extends TestCase
     {
         $user = User::factory()->create([
             'name' => 'Dr. Fernando Ruiz',
+            'role' => 'user',
         ]);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
-        $response->assertStatus(200);
-        $response->assertSee('Dr. Fernando Ruiz');
-        $response->assertSee('Panel Principal - RutaSalud Rural');
+        $response->assertRedirect(route('dashboard.user'));
     }
 }

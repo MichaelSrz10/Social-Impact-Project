@@ -146,13 +146,13 @@
   <header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
     <div class="h-20 max-w-[1200px] mx-auto px-margin flex items-center justify-between gap-gutter">
       <div class="flex items-center gap-space-lg">
-        <div class="flex items-center gap-space-xs">
+        <a href="{{ route('home') }}" class="flex items-center gap-space-xs">
           <span class="material-symbols-outlined text-primary text-[28px]">nature_people</span>
           <div class="flex flex-col">
             <span class="font-headline-sm text-headline-sm text-primary tracking-tight">RutaSalud Rural</span>
             <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Atención y Registro Comunitario</span>
           </div>
-        </div>
+        </a>
         <nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-primary font-bold rounded-lg">
           <a aria-current="page" class="px-space-sm py-space-xs transition-colors bg-surface-container-high text-primary font-bold rounded-lg" data-path="panel-territorial" href="#">Panel Territorial</a>
           <a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md rounded-lg" data-path="registro-veredal" href="#">Registro Veredal</a>
@@ -173,10 +173,14 @@
         <div class="flex items-center gap-space-xs bg-surface-container-lowest px-space-xs py-1 pr-space-sm rounded-full shadow-[0_1px_6px_rgba(27,42,42,0.06)]">
           <img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1XshXW8uaxW7KeCP6VjPD8k8-ST4XO4AZJ4KsZvg2rHTMk3TaPBlFZYOtyh62wfnJEEWfjWorE08vssS0LKJuFeCgIvGTEH4W2-DU6xgCRxW0pdyYK4_AISx_HoLST_DolB5bR9F5xyW6p4iUySCte9DtOVyEN1Qy4N7v0z92sKXWAEcqN22ISLZe16nJTLUZ22ytP6e9tAfsIbP7eQ_Wvj2FGvUDApg3NldxcU0WU" />
           <div class="flex flex-col text-left">
-            <span class="font-label-sm text-label-sm text-on-surface">Dra. Marcela Galeano</span>
-            <span class="font-label-sm text-label-sm text-on-surface-variant">Líder Sanitaria Veredal</span>
+            <span class="font-label-sm text-label-sm text-on-surface font-bold">{{ Auth::user()->name }}</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant capitalize">{{ Auth::user()->role ?? 'Líder Sanitaria Veredal' }}</span>
           </div>
         </div>
+        <form method="POST" action="{{ route('logout') }}" class="inline">
+          @csrf
+          <button type="submit" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-variant text-on-surface text-xs font-bold transition">Cerrar Sesión</button>
+        </form>
       </div>
     </div>
   </header>

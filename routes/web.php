@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -7,19 +8,13 @@ Route::get('/', function () {
     return view('index');
 })->name('home');
 
-Route::get('/user', function () {
-    return view('dashboards.user');
-});
-
-Route::get('/promotor', function () {
-    return view('dashboards.promotor');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/promotor', [DashboardController::class, 'promotor'])->name('dashboard.promotor');
+    Route::get('/dashboard/user', [DashboardController::class, 'user'])->name('dashboard.user');
+    Route::get('/promotor', [DashboardController::class, 'promotor']);
+    Route::get('/user', [DashboardController::class, 'user']);
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

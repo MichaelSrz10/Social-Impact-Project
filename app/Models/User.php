@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -29,6 +29,22 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Determina si el usuario tiene rol de personal de salud / promotor.
+     */
+    public function isPromotor(): bool
+    {
+        return in_array($this->role, ['promotor', 'medico', 'admin'], true);
+    }
+
+    /**
+     * Determina si el usuario tiene rol de ciudadano / paciente.
+     */
+    public function isCiudadano(): bool
+    {
+        return in_array($this->role, ['user', 'ciudadano', 'admin'], true);
     }
 
     /**

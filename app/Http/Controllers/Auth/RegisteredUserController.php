@@ -47,10 +47,15 @@ class RegisteredUserController extends Controller
             'terms.accepted' => 'Debes aceptar los términos de uso y la política de privacidad.',
         ]);
 
+        $role = ($request->input('user-type') === 'medico' || $request->input('role') === 'promotor')
+            ? 'promotor'
+            : 'user';
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role' => $role,
         ]);
 
         event(new Registered($user));

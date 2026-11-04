@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.5-apache
 
 # Instalar dependencias del sistema y utilidades
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -13,8 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar extensiones PHP necesarias para Laravel y MySQL
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath opcache
+# Instalar extensiones PHP necesarias para Laravel y MySQL (mbstring y opcache ya están integradas en PHP 8.5)
+RUN docker-php-ext-install pdo_mysql zip exif pcntl bcmath
 
 # Habilitar mod_rewrite de Apache
 RUN a2enmod rewrite

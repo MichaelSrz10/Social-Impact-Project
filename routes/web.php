@@ -15,6 +15,14 @@ Route::get('/register', function () {
     return view('auth.register');
 });
 
+Route::get('/user', function () {
+    return view('dashboards.user');
+});
+
+Route::get('/promotor', function () {
+    return view('dashboards.promotor');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

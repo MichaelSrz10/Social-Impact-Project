@@ -18,6 +18,7 @@
       html, body {
         margin: 0;
         padding: 0;
+        scroll-behavior: smooth;
       }
       body {
         overscroll-behavior: none;
@@ -172,11 +173,13 @@
           <span class="material-symbols-outlined text-[22px]">notifications</span>
           <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-tertiary-container"></span>
         </button>
-        <div class="flex items-center gap-space-xs bg-surface-container-lowest px-space-xs py-1 pr-space-sm rounded-full shadow-[0_1px_6px_rgba(27,42,42,0.06)]">
-          <img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1XshXW8uaxW7KeCP6VjPD8k8-ST4XO4AZJ4KsZvg2rHTMk3TaPBlFZYOtyh62wfnJEEWfjWorE08vssS0LKJuFeCgIvGTEH4W2-DU6xgCRxW0pdyYK4_AISx_HoLST_DolB5bR9F5xyW6p4iUySCte9DtOVyEN1Qy4N7v0z92sKXWAEcqN22ISLZe16nJTLUZ22ytP6e9tAfsIbP7eQ_Wvj2FGvUDApg3NldxcU0WU" />
+        <div class="flex items-center gap-space-xs bg-surface-container-lowest px-2.5 py-1 pr-space-sm rounded-full shadow-[0_1px_6px_rgba(27,42,42,0.06)] border border-outline-variant/30">
+          <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-xs tracking-wider shadow-inner">
+            {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+          </div>
           <div class="flex flex-col text-left">
-            <span class="font-label-sm text-label-sm text-on-surface font-bold">{{ Auth::user()->name }}</span>
-            <span class="font-label-sm text-label-sm text-on-surface-variant capitalize">{{ Auth::user()->role ?? 'Líder Sanitaria Veredal' }}</span>
+            <span class="font-label-sm text-label-sm text-on-surface font-bold leading-tight">{{ Auth::user()->name }}</span>
+            <span class="font-label-sm text-label-sm text-primary font-medium">{{ Auth::user()->role === 'admin' ? 'Administrador' : (Auth::user()->role === 'promotor' ? 'Promotor de Salud' : 'Personal Médico') }}</span>
           </div>
         </div>
         <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -228,21 +231,33 @@
 </section>
 
 <section class="grid grid-cols-2 md:grid-cols-4 gap-space-md">
-  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/20">
-    <span class="font-label-sm text-label-sm text-primary font-bold">PENDIENTES</span>
-    <p class="font-headline-lg text-headline-lg text-on-surface">{{ $stats['pendientes'] }}</p>
+  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/30 flex items-center justify-between">
+    <div>
+      <span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider">Pendientes</span>
+      <p class="font-headline-lg text-headline-lg text-on-surface mt-1">{{ $stats['pendientes'] }}</p>
+    </div>
+    <span class="w-10 h-10 rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed flex items-center justify-center material-symbols-outlined text-[22px]">hourglass_top</span>
   </div>
-  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/20">
-    <span class="font-label-sm text-label-sm text-primary font-bold">PROGRAMADAS</span>
-    <p class="font-headline-lg text-headline-lg text-on-surface">{{ $stats['programadas'] }}</p>
+  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/30 flex items-center justify-between">
+    <div>
+      <span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider">Programadas</span>
+      <p class="font-headline-lg text-headline-lg text-on-surface mt-1">{{ $stats['programadas'] }}</p>
+    </div>
+    <span class="w-10 h-10 rounded-xl bg-primary-fixed text-on-primary-fixed flex items-center justify-center material-symbols-outlined text-[22px]">event_available</span>
   </div>
-  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/20">
-    <span class="font-label-sm text-label-sm text-primary font-bold">ATENDIDAS</span>
-    <p class="font-headline-lg text-headline-lg text-on-surface">{{ $stats['atendidas'] }}</p>
+  <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-outline-variant/30 flex items-center justify-between">
+    <div>
+      <span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">Atendidas</span>
+      <p class="font-headline-lg text-headline-lg text-on-surface mt-1">{{ $stats['atendidas'] }}</p>
+    </div>
+    <span class="w-10 h-10 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center material-symbols-outlined text-[22px]">task_alt</span>
   </div>
-  <div class="bg-error-container text-on-error-container rounded-xl p-space-md shadow-sm">
-    <span class="font-label-sm text-label-sm font-bold">PRIORIDAD CRÍTICA</span>
-    <p class="font-headline-lg text-headline-lg">{{ $stats['criticas'] }}</p>
+  <div class="bg-error-container text-on-error-container rounded-xl p-space-md shadow-sm border border-error/20 flex items-center justify-between">
+    <div>
+      <span class="font-label-sm text-label-sm font-bold uppercase tracking-wider">Prioridad Crítica</span>
+      <p class="font-headline-lg text-headline-lg mt-1">{{ $stats['criticas'] }}</p>
+    </div>
+    <span class="w-10 h-10 rounded-xl bg-error/20 text-on-error-container flex items-center justify-center material-symbols-outlined text-[22px]">emergency</span>
   </div>
 </section>
 
@@ -278,26 +293,29 @@
       Se visitan primero las veredas con mayor prioridad (vulnerabilidad de la vereda + urgencia declarada) y se ordenan por vecino más cercano partiendo de {{ $puntoCero['nombre'] }}.
     </p>
     <ol class="flex flex-col gap-space-sm">
-      <li class="flex items-center gap-3 bg-surface-container-low rounded-xl p-space-sm">
-        <span class="w-9 h-9 rounded-full bg-secondary text-on-secondary flex items-center justify-center material-symbols-outlined text-[20px]">local_hospital</span>
+      <li class="flex items-center gap-3 bg-surface-container-low rounded-xl p-space-sm border border-outline-variant/30 shadow-sm">
+        <span class="w-9 h-9 rounded-full bg-secondary text-on-secondary flex items-center justify-center material-symbols-outlined text-[20px] shadow-sm">local_hospital</span>
         <div>
-          <p class="font-body-bold text-body-bold text-on-surface">Salida · {{ $puntoCero['nombre'] }}</p>
+          <p class="font-body-bold text-body-bold text-on-surface">Punto Cero (Salida) · {{ $puntoCero['nombre'] }}</p>
           <p class="font-label-sm text-label-sm text-on-surface-variant">{{ $puntoCero['lat'] }}, {{ $puntoCero['lng'] }}</p>
         </div>
       </li>
       @foreach ($paradas as $p)
-        <li class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm">
+        <li class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm border border-outline-variant/30 shadow-sm hover:border-primary/30 transition">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">{{ $p['orden'] }}</span>
+              <span class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-sm">{{ $p['orden'] }}</span>
               <div>
-                <h3 class="font-body-bold text-body-bold text-on-surface">Vereda {{ $p['nombre'] }}</h3>
+                <h3 class="font-body-bold text-body-bold text-on-surface flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-primary text-[18px]">location_on</span>
+                  Vereda {{ $p['nombre'] }}
+                </h3>
                 <p class="font-label-sm text-label-sm text-on-surface-variant">{{ $p['lat'] }}, {{ $p['lng'] }} · +{{ $p['distancia_desde_anterior_km'] }} km desde la parada anterior</p>
               </div>
             </div>
-            <span class="px-3 py-1 rounded-full font-label-sm text-label-sm {{ $prioClase($p['vulnerabilidad']) }}">Prioridad máx. {{ $p['vulnerabilidad'] }}</span>
+            <span class="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold {{ $prioClase($p['vulnerabilidad']) }}">Prioridad territorial: {{ $p['vulnerabilidad'] }}</span>
           </div>
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-2 pt-1">
             @foreach ($p['solicitudes'] as $s)
               @include('dashboards.partials.solicitud-fila', ['s' => $s])
             @endforeach
@@ -340,9 +358,10 @@
         <p class="font-body-md text-body-md text-on-surface-variant">Sistema Integral de Atención Primaria para Zonas Dispersas y Veredas</p>
       </div>
       <div class="flex flex-wrap justify-center gap-space-md font-label-md text-label-md text-on-surface-variant">
-        <a class="hover:text-primary transition-colors" data-path="guia-de-campo" href="#">Guía de Campo Offline</a>
-        <a class="hover:text-primary transition-colors" data-path="protocolos-msps" href="#">Protocolos MSPS</a>
-        <a class="hover:text-primary transition-colors" data-path="soporte-tecnico" href="#">Soporte Técnico</a>
+        <a class="hover:text-primary transition-colors" href="#panel-territorial">Panel Territorial</a>
+        <a class="hover:text-primary transition-colors" href="#ruta-sugerida">Ruta Sugerida</a>
+        <a class="hover:text-primary transition-colors" href="#solicitudes">Solicitudes</a>
+        <a class="hover:text-primary transition-colors" href="{{ route('home') }}">Portal Principal</a>
       </div>
       <p class="font-label-sm text-label-sm text-on-surface-variant text-center">© 2024 Red de Salud Rural Comunitaria. Todos los derechos reservados.</p>
     </div>
